@@ -1,18 +1,25 @@
 name: Deploy to EC2
-on: push
+
+on:
+  push:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: Checkout code
-    uses: actions/checkout@v2
+
     steps:
-        -name: Make scripts executable
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Make scripts executable
         run: |
           chmod +x scripts/stop-server.sh
-          chmod +x scripts/start-sever.sh
-      - name: zip code for deployment
+          chmod +x scripts/start-server.sh
+
+      - name: Zip code for deployment
         run: |
           zip -r deployment.zip . -x "*.git*"
+
       - name: Upload to S3
         uses: jakejarvis/s3-sync-action@master
         with:
@@ -21,8 +28,10 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR: './deployment.zip'
-      - name: Trigeer AWS CodeDeploy
+          SOURCE_DIR: './'
+          DEST_DIR: ''
+
+      - name: Trigger AWS CodeDeploy
         uses: aws-actions/aws-code-deploy@v1
         with:
           application-name: ${{ secrets.AWS_CODE_DEPLOY_APPLICATION_NAME }}
@@ -34,3 +43,4 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
+
