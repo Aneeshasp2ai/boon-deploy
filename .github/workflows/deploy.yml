@@ -10,7 +10,7 @@ jobs:
         -name: Make scripts executable
         run: |
           chmod +x scripts/stop-server.sh
-          chmod +x scripts/start-sever.sh
+          chmod +x scripts/start-server.sh
       - name: zip code for deployment
         run: |
           zip -r deployment.zip . -x "*.git*"
